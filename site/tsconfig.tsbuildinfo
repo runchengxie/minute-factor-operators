@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/data.ts","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/BarChart.tsx","./src/components/LineChart.tsx","./src/components/MetricCard.tsx","./src/pages/FactorPage.tsx","./src/pages/HermitePage.tsx","./src/pages/JumpPage.tsx","./src/pages/OverviewPage.tsx"],"version":"5.9.3"}
