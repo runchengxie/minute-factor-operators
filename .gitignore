@@ -23,6 +23,7 @@ env/
 *~
 node_modules/
 site/dist/
+*.tsbuildinfo
 
 # OS
 .DS_Store
