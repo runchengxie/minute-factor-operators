@@ -1,8 +1,8 @@
-# minute-factor-operators 因子研究 GitHub Pages 设计
+# factor-research-observatory 因子研究 GitHub Pages 设计
 
 ## 目标
 
-为 `minute-factor-operators` 增加一个可部署到 GitHub Pages 的静态研究站点，用于解释因子体系、展示代表性统计结果，并帮助研究者检查因子输出。站点是浏览和解释层，不在浏览器中实时运行分钟级因子计算。
+为 `factor-research-observatory` 提供一个可部署到 GitHub Pages 的静态研究站点，用于解释因子体系、展示代表性统计结果，并帮助研究者检查因子输出。站点是浏览和解释层，不在浏览器中实时运行分钟级因子计算。
 
 第一版聚焦已有文档和代表性因子：32 个分钟因子、48 个 Hermite 元因子、跳跃分解链路，以及 `vol_rv_ts_closeness_60` 的单股时间序列与横截面分布。
 

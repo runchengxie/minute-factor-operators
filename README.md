@@ -1,4 +1,4 @@
-# minute-factor-operators
+# factor-research-observatory
 
 Alpha 因子计算算子 —— `guan-factor-research-framework` 的特征工程层。
 
