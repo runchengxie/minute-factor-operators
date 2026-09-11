@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a static, GitHub Pages-compatible research site that explains the minute factor families and interactively explores representative jump and Hermite factor outputs.
+**Goal:** Build a static, GitHub Pages-compatible research site that explains multi-frequency factor families and interactively explores representative jump, Hermite, and fundamental factor outputs.
 
 **Architecture:** A Python snapshot builder reads local Parquet when available or emits a deterministic demo snapshot when requested. A Vite/React/TypeScript site consumes only the generated JSON, renders overview, factor detail, jump decomposition, and Hermite regime pages, and is deployed by a Pages artifact workflow.
 

@@ -1,1 +1,1 @@
-"""Test package for minute-factor-operators."""
+"""Test package for factor-research-observatory."""
