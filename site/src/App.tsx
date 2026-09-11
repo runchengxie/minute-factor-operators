@@ -13,7 +13,7 @@ function pathView(snapshot: Snapshot, catalog: FundamentalCatalog, fundamental: 
   const records = toResearchRecords(snapshot, catalog, fundamental)
   const context = buildResearchContext(snapshot, fundamental)
   const path = window.location.pathname.replace(import.meta.env.BASE_URL, '').replace(/^\//, '')
-  if (path === '' || path === 'index.html') return <OverviewPage snapshot={snapshot} />
+  if (path === '' || path === 'index.html') return <OverviewPage snapshot={snapshot} records={records} context={context} />
   if (path === 'jumps') return <JumpPage snapshot={snapshot} />
   if (path === 'hermite') return <HermitePage snapshot={snapshot} />
   if (path === 'fundamentals') return <FundamentalsPage catalog={catalog} snapshot={fundamental} />
