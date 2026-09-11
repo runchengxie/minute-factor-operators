@@ -38,11 +38,7 @@ def _offset_quarter(key: tuple[int, int], offset: int) -> tuple[int, int]:
     return absolute // 4, absolute % 4 + 1
 
 
-def _first_non_null(frame):
-    return frame.dropna().iloc[0] if not frame.dropna().empty else None
-
-
-def _read_pit(input_root: Path, tickers: list[str]):
+def _read_pit(input_root: Path, tickers: list[str] | None):
     try:
         import pyarrow.dataset as ds
     except ImportError as exc:
@@ -57,16 +53,21 @@ def _read_pit(input_root: Path, tickers: list[str]):
         "net_profit_yoy", "revenue_yoy",
     ]
     columns = [column for column in wanted if column in dataset.schema.names]
-    table = dataset.to_table(columns=columns, filter=ds.field("symbol").isin(tickers))
+    predicate = ds.field("symbol").isin(tickers) if tickers else None
+    table = dataset.to_table(columns=columns, filter=predicate)
     if not table.num_rows:
         raise ValueError(f"PIT 数据中没有目标股票：{tickers}")
-    return table.to_pandas()
+    frame = table.to_pandas()
+    frame = frame[frame["symbol"].astype(str).str.match(r"^\d{6}\.(SZ|SH|BJ)$")].copy()
+    if frame.empty:
+        raise ValueError("PIT 数据过滤真实 A 股代码后为空")
+    return frame
 
 
 def _collapse_rows(frame):
     keys = ["symbol", "trade_date", "report_period", "disclosure_date", "available_date"]
     values = [column for column in frame.columns if column not in keys]
-    return frame.groupby(keys, as_index=False, dropna=False)[values].agg(_first_non_null)
+    return frame.groupby(keys, as_index=False, dropna=False, sort=False)[values].first()
 
 
 def _standardized_op_series(frame):
@@ -111,8 +112,8 @@ def _standardized_op_series(frame):
     return output
 
 
-def build_snapshot(input_root: Path, output: Path, tickers: list[str]) -> dict[str, Any]:
-    frame = _collapse_rows(_read_pit(input_root, tickers))
+def build_snapshot(input_root: Path, output: Path, tickers: list[str], all_market: bool = False) -> dict[str, Any]:
+    frame = _collapse_rows(_read_pit(input_root, None if all_market else tickers))
     op_rows = _standardized_op_series(frame)
     series = []
     for ticker in tickers:
@@ -125,12 +126,25 @@ def build_snapshot(input_root: Path, output: Path, tickers: list[str]) -> dict[s
             if not metric_rows.empty:
                 series.append({"ticker": ticker, "metric": metric, "dates": [_display_date(value) for value in metric_rows["available_date"].tolist()], "values": [_finite(value) for value in metric_rows[metric].tolist()]})
     available = frame["available_date"].dropna().astype(str).tolist()
+    latest = {}
+    for row in op_rows:
+        if row["standardized_operating_profit"] is not None:
+            latest[row["ticker"]] = row
+    latest_values = [row["standardized_operating_profit"] for row in latest.values()]
+    latest_values.sort()
+    def quantile(fraction: float) -> float | None:
+        if not latest_values:
+            return None
+        index = min(len(latest_values) - 1, int(round((len(latest_values) - 1) * fraction)))
+        return latest_values[index]
     snapshot = {
         "schema_version": 1,
         "source": "local_pit_vintage",
         "vintage": "20260802",
         "dataset": "tushare.a_share.fundamentals.pit.v2",
-        "coverage": {"date_start": _display_date(min(available)), "date_end": _display_date(max(available)), "tickers": sorted(frame["symbol"].unique().tolist()), "observations": int(len(frame))},
+        "coverage": {"date_start": _display_date(min(available)), "date_end": _display_date(max(available)), "tickers": tickers, "tickers_count": int(frame["symbol"].nunique()), "representative_tickers": tickers, "observations": int(len(frame))},
+        "latest_cross_section": {"metric": "standardized_operating_profit", "count": len(latest_values), "missing": int(frame["symbol"].nunique() - len(latest_values)), "p01": quantile(0.01), "p25": quantile(0.25), "p50": quantile(0.5), "p75": quantile(0.75), "p99": quantile(0.99)},
+        "validation": {"all_market_computed": all_market, "historical_ttm_window": 6, "complete_quarters_required": 4, "quarterly_rule": "Q1 cumulative; Q2/Q3 current cumulative minus prior quarter; Q4 annual minus Q3", "pit_date_field": "available_date", "report_period_field": "report_period", "universe_filter": "^[0-9]{6}\\.(SZ|SH|BJ)$"},
         "series": series,
         "notes": [
             "This snapshot is generated from a local point-in-time vintage and contains representative tickers only.",
@@ -148,8 +162,9 @@ def main() -> None:
     parser.add_argument("--input-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--tickers", nargs="+", default=["000001.SZ", "600519.SH", "300750.SZ"])
+    parser.add_argument("--all-market", action="store_true", help="compute the standardized operating profit cross-section for every PIT ticker")
     args = parser.parse_args()
-    build_snapshot(args.input_root, args.output, args.tickers)
+    build_snapshot(args.input_root, args.output, args.tickers, all_market=args.all_market)
 
 
 if __name__ == "__main__":

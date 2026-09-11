@@ -4,14 +4,39 @@
   "vintage": "20260802",
   "dataset": "tushare.a_share.fundamentals.pit.v2",
   "coverage": {
-    "date_start": "2008-04-23",
-    "date_end": "2026-07-26",
+    "date_start": "2008-04-09",
+    "date_end": "2026-08-04",
     "tickers": [
       "000001.SZ",
-      "300750.SZ",
-      "600519.SH"
+      "600519.SH",
+      "300750.SZ"
     ],
-    "observations": 189
+    "tickers_count": 6736,
+    "representative_tickers": [
+      "000001.SZ",
+      "600519.SH",
+      "300750.SZ"
+    ],
+    "observations": 330408
+  },
+  "latest_cross_section": {
+    "metric": "standardized_operating_profit",
+    "count": 5620,
+    "missing": 1116,
+    "p01": -4.564514956544998,
+    "p25": -0.728581960726071,
+    "p50": 0.07164273445578,
+    "p75": 0.7710893336750265,
+    "p99": 4.8518498719947045
+  },
+  "validation": {
+    "all_market_computed": true,
+    "historical_ttm_window": 6,
+    "complete_quarters_required": 4,
+    "quarterly_rule": "Q1 cumulative; Q2/Q3 current cumulative minus prior quarter; Q4 annual minus Q3",
+    "pit_date_field": "available_date",
+    "report_period_field": "report_period",
+    "universe_filter": "^[0-9]{6}\\.(SZ|SH|BJ)$"
   },
   "series": [
     {

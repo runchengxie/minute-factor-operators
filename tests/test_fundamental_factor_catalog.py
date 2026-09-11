@@ -31,6 +31,18 @@ class FundamentalFactorCatalogTests(unittest.TestCase):
         self.assertGreaterEqual(len(snapshot["coverage"]["tickers"]), 3)
         self.assertTrue(any(item["metric"] == "standardized_operating_profit" for item in snapshot["series"]))
 
+    def test_fundamental_snapshot_records_all_market_validation(self):
+        snapshot = json.loads((CATALOG.parent / "fundamental-snapshot.json").read_text())
+        self.assertTrue(snapshot["validation"]["all_market_computed"])
+        self.assertGreater(snapshot["coverage"]["tickers_count"], len(snapshot["coverage"]["representative_tickers"]))
+        self.assertEqual(snapshot["validation"]["historical_ttm_window"], 6)
+
+    def test_fundamental_snapshot_keeps_pit_dates_and_null_warmup(self):
+        snapshot = json.loads((CATALOG.parent / "fundamental-snapshot.json").read_text())
+        series = snapshot["series"][0]
+        self.assertEqual(len(series["dates"][0]), 10)
+        self.assertIn(None, series["values"])
+
 
 if __name__ == "__main__":
     unittest.main()
