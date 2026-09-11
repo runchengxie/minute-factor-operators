@@ -165,9 +165,10 @@ python scripts/build_factor_snapshot.py \
 
 ```bash
 uv run --with pandas --with pyarrow python scripts/build_fundamental_snapshot.py \
+  --all-market \
   --input-root /home/richard/data/quant/market-data-platform/experiments/style-factor-full-history-20260802/assets/tushare/a_share/fundamentals_vintages/vintage=20260802 \
   --output site/public/data/fundamental-snapshot.json \
   --tickers 000001.SZ 600519.SH 300750.SZ
 ```
 
-该 snapshot 使用 `tushare.a_share.fundamentals.pit.v2`，明确保留 `available_date` 和 vintage 信息。标准化营业利润只有在四个完整季度及前六个 TTM 都可用时才计算；这份展示数据不代表已完成回测验证。
+该 snapshot 使用 `tushare.a_share.fundamentals.pit.v2`，明确保留 `available_date` 和 vintage 信息，并只纳入六位数字的 `.SZ/.SH/.BJ` 真实股票代码。`--all-market` 会计算全市场最新截面统计，但页面只保存少量代表股票的时间序列。标准化营业利润只有在四个完整季度及前六个 TTM 都可用时才计算；这份展示数据不代表已完成回测验证。
