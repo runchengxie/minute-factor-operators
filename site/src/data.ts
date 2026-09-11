@@ -1,4 +1,4 @@
-import type { Snapshot } from './types'
+import type { FundamentalCatalog, FundamentalSnapshot, Snapshot } from './types'
 
 const required = ['schema_version', 'generated_at', 'source', 'datasets', 'factor_groups', 'factors', 'series', 'cross_section', 'jump_decomposition'] as const
 
@@ -13,4 +13,14 @@ export async function loadSnapshot(): Promise<Snapshot> {
 
 export function findSeries(snapshot: Snapshot, ticker: string, metric: string) {
   return snapshot.series.find((item) => item.ticker === ticker && item.metric === metric)
+}
+
+export async function loadFundamentalData(): Promise<{ catalog: FundamentalCatalog; snapshot: FundamentalSnapshot }> {
+  const base = import.meta.env.BASE_URL
+  const [catalogResponse, snapshotResponse] = await Promise.all([
+    fetch(`${base}data/fundamental-factor-catalog.json`),
+    fetch(`${base}data/fundamental-snapshot.json`),
+  ])
+  if (!catalogResponse.ok || !snapshotResponse.ok) throw new Error('基本面研究数据未能加载')
+  return { catalog: await catalogResponse.json() as FundamentalCatalog, snapshot: await snapshotResponse.json() as FundamentalSnapshot }
 }

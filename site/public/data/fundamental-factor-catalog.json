@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "title": "基本面经营状态因子目录",
+  "status": "catalog",
+  "data_status": "awaiting_factor_snapshot",
+  "research_notes": [
+    "This catalog is a research map; it does not claim backtest performance.",
+    "Real calculations must use point-in-time financial observations keyed by available or disclosure date.",
+    "TTM must require four complete quarters; do not replace missing quarters with nanmean multiplied by four.",
+    "The standardized operating profit implementation must compare operating_profit_ttm with historical operating_profit_ttm, not quarterly operating_profit.",
+    "The local PIT vintage currently provides operate_profit and available_date; a faithful six-TTM factor still needs an explicit quarterly normalization contract."
+  ],
+  "factors": [
+    {"id":"standardized_operating_profit","name":"标准化营业利润","family":"盈利状态","priority":"core","formula":"Z(OP_TTM; 过去 6 个 TTM)","meaning":"当前经营利润相对公司自身历史盈利状态的异常程度","data_requirements":["operate_profit","report_period","available_date"]},
+    {"id":"operating_profit_yoy_zscore","name":"标准化营业利润同比增长","family":"盈利增长","priority":"core","formula":"Z(ΔOP_TTM YoY)","meaning":"经营利润同比改善相对历史波动的强度","data_requirements":["operate_profit","report_period","available_date"]},
+    {"id":"operating_profit_acceleration","name":"营业利润加速度","family":"盈利增长","priority":"core","formula":"Δ(ΔOP_TTM)","meaning":"盈利增长速度的二阶变化","data_requirements":["operate_profit","report_period","available_date"]},
+    {"id":"operating_earnings_yield_zscore","name":"标准化经营盈利收益率","family":"估值 / 盈利","priority":"core","formula":"Z(OP_TTM / MarketCap)","meaning":"经营利润相对市值的历史异常程度","data_requirements":["operate_profit","market_value","available_date"]},
+    {"id":"finance_expense_ratio_improvement","name":"财务费用率改善","family":"财务质量","priority":"core","formula":"Z(−FinanceExpense / Revenue)","meaning":"融资负担相对营业收入的改善程度","data_requirements":["fin_exp","revenue","available_date"]},
+    {"id":"asset_impairment_stability","name":"资产减值稳定性","family":"风险 / 质量","priority":"core","formula":"CV(AssetsImpairmentLoss / TotalAssets)","meaning":"资产减值损失强度的历史不稳定程度","data_requirements":["assets_impair_loss","total_assets","available_date"]},
+    {"id":"revenue_zscore","name":"标准化营业收入","family":"盈利增长","priority":"supporting","formula":"Z(Revenue)","meaning":"营业收入相对自身历史景气度","data_requirements":["revenue","available_date"]},
+    {"id":"comprehensive_income_yield_zscore","name":"标准化综合收益率","family":"估值 / 盈利","priority":"supporting","formula":"Z(ComprehensiveIncome / MarketCap)","meaning":"综合收益相对市值的历史位置","data_requirements":["compr_inc_attr_p","market_value","available_date"]},
+    {"id":"income_tax_zscore_250","name":"所得税费用异常度（250）","family":"税负 / 融资","priority":"supporting","formula":"Z(IncomeTax; 250)","meaning":"所得税费用相对历史水平的异常程度","data_requirements":["income_tax","available_date"]},
+    {"id":"income_tax_zscore_120","name":"所得税费用异常度（120）","family":"税负 / 融资","priority":"supporting","formula":"Z(IncomeTax; 120)","meaning":"短期税费变化相对历史水平的异常程度","data_requirements":["income_tax","available_date"]},
+    {"id":"negative_roa_exp_mean_120","name":"负 ROA 指数均值（120）","family":"盈利质量","priority":"supporting","formula":"EWMA(−NetIncome / TotalAssets; 120)","meaning":"短期资产盈利能力的反向平滑指标","data_requirements":["net_profit","total_assets","available_date"]},
+    {"id":"negative_earnings_yield_cv_120","name":"负盈利收益率稳定性（120）","family":"估值 / 盈利","priority":"supporting","formula":"CV(−NetIncome / MarketCap; 120)","meaning":"盈利收益率波动与稳定程度","data_requirements":["net_profit","market_value","available_date"]},
+    {"id":"income_tax_yield_zscore_120","name":"所得税 / 市值异常度","family":"税负 / 融资","priority":"supporting","formula":"Z(IncomeTax / MarketCap; 120)","meaning":"税费负担相对估值的历史异常程度","data_requirements":["income_tax","market_value","available_date"]},
+    {"id":"invest_income_yield_zscore","name":"投资收益 / 市值异常度","family":"非主营收益","priority":"supporting","formula":"Z(InvestIncome / MarketCap; 120)","meaning":"非主营投资收益相对估值的异常程度","data_requirements":["invest_income","market_value","available_date"]},
+    {"id":"other_gain_yield_zscore","name":"其他收益 / 市值异常度","family":"非主营收益","priority":"supporting","formula":"Z(OtherGain / MarketCap; 120)","meaning":"补贴或其他非核心收益相对估值的异常程度","data_requirements":["other_gain","market_value","available_date"]},
+    {"id":"negative_roa_cv_250","name":"负 ROA 波动性（250）","family":"盈利质量","priority":"supporting","formula":"CV(−NetIncome / TotalAssets; 250)","meaning":"长期资产盈利能力的不稳定程度","data_requirements":["net_profit","total_assets","available_date"]},
+    {"id":"negative_roe_exp_mean_750","name":"负 ROE 指数均值（750）","family":"盈利质量","priority":"supporting","formula":"EWMA(−NetIncome / Equity; 750)","meaning":"长期股东资本盈利能力的平滑反向指标","data_requirements":["net_profit","equity_parent","available_date"]},
+    {"id":"cash_to_market_value_zscore","name":"现金 / 市值异常度","family":"资产质量 / 估值","priority":"supporting","formula":"Z(Cash / MarketCap; 120)","meaning":"现金资产相对市场估值的历史异常程度","data_requirements":["money_cap","market_value","available_date"]}
+  ]
+}
