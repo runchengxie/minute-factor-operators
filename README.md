@@ -124,3 +124,36 @@ hermite_factor_meta      ──→  factor_results/hermite_factor_meta/*.parquet
 - **刻意紧凑**：Hermite 部分限定 12 个源因子 × 4 个指标，避免候选爆炸
 - **数值稳健**：无穷值裁剪、零方差 guard（`std > 1e-8`）、z-score 限幅 [-8, 8]、float32 存储
 - **零 ML 依赖**：纯特征生成，不耦合任何模型库
+
+## 因子研究站点
+
+本仓库包含一个可部署到 GitHub Pages 的静态研究站点，用于浏览因子元数据和代表性快照。站点不在浏览器中运行分钟级因子计算，完整 Parquet 数据也不提交到 Git。
+
+### 本地运行
+
+```bash
+# 生成可预览的 demo 数据
+python scripts/build_factor_snapshot.py --demo --output site/public/data/factor-snapshot.json
+
+# 启动站点
+cd site
+npm install
+npm run dev
+```
+
+站点包含以下入口：
+
+- `/`：因子总览与数据流
+- `/factors/realized_variance`：因子详情示例
+- `/jumps`：RV / IVhat / RJV / RLJV / RSJV 跳跃分解
+- `/hermite`：Hermite 非高斯体制时间线
+
+如果已有真实因子结果，可将其根目录传给快照生成器：
+
+```bash
+python scripts/build_factor_snapshot.py \
+  --input-root /path/to/factor_results \
+  --output site/public/data/factor-snapshot.json
+```
+
+推送到 `master` 后，GitHub Actions 会构建并发布 Pages。首次启用时，需要在仓库 Settings → Pages → Build and deployment 中选择 GitHub Actions。站点地址通常为 `https://<owner>.github.io/<repository>/`。

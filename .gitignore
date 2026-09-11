@@ -21,6 +21,9 @@ env/
 *.swp
 *.swo
 *~
+node_modules/
+site/dist/
+*.tsbuildinfo
 
 # OS
 .DS_Store
