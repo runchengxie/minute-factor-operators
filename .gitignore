@@ -24,6 +24,7 @@ env/
 node_modules/
 site/dist/
 *.tsbuildinfo
+.worktrees/
 
 # OS
 .DS_Store
