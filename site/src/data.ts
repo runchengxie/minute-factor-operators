@@ -1,6 +1,7 @@
 import type { FundamentalCatalog, FundamentalSnapshot, Snapshot } from './types'
 
 const required = ['schema_version', 'generated_at', 'source', 'datasets', 'factor_groups', 'factors', 'series', 'cross_section', 'jump_decomposition'] as const
+const fundamentalRequired = ['schema_version', 'source', 'vintage', 'dataset', 'coverage', 'latest_cross_section', 'validation', 'series', 'notes'] as const
 
 export async function loadSnapshot(): Promise<Snapshot> {
   const response = await fetch(`${import.meta.env.BASE_URL}data/factor-snapshot.json`)
@@ -22,5 +23,10 @@ export async function loadFundamentalData(): Promise<{ catalog: FundamentalCatal
     fetch(`${base}data/fundamental-snapshot.json`),
   ])
   if (!catalogResponse.ok || !snapshotResponse.ok) throw new Error('基本面研究数据未能加载')
-  return { catalog: await catalogResponse.json() as FundamentalCatalog, snapshot: await snapshotResponse.json() as FundamentalSnapshot }
+  const catalogValue: unknown = await catalogResponse.json()
+  const snapshotValue: unknown = await snapshotResponse.json()
+  if (!catalogValue || typeof catalogValue !== 'object' || !Array.isArray((catalogValue as { factors?: unknown }).factors)) throw new Error('基本面因子目录格式无效')
+  if (!snapshotValue || typeof snapshotValue !== 'object') throw new Error('基本面研究快照格式无效')
+  for (const key of fundamentalRequired) if (!(key in snapshotValue)) throw new Error(`基本面研究快照缺少字段：${key}`)
+  return { catalog: catalogValue as FundamentalCatalog, snapshot: snapshotValue as FundamentalSnapshot }
 }
