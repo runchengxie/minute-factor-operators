@@ -18,7 +18,10 @@ function pathView(snapshot: Snapshot, catalog: FundamentalCatalog, fundamental: 
   if (path === 'hermite') return <HermitePage snapshot={snapshot} />
   if (path === 'fundamentals') return <FundamentalsPage catalog={catalog} snapshot={fundamental} />
   if (path === 'factors') return <FactorExplorerPage records={records} context={context} />
-  if (path.startsWith('factors/')) return <FactorPage snapshot={snapshot} factorName={decodeURIComponent(path.slice(8))} />
+  if (path.startsWith('factors/')) {
+    const factor = records.find((item) => item.id === decodeURIComponent(path.slice(8)))
+    return <FactorPage factor={factor} context={context} />
+  }
   return <main className="empty"><h1>找不到这个页面</h1><a href={import.meta.env.BASE_URL}>返回总览</a></main>
 }
 
