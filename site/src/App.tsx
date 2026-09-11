@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
 import { loadFundamentalData, loadSnapshot } from './data'
+import { buildResearchContext, toResearchRecords } from './research'
 import type { FundamentalCatalog, FundamentalSnapshot, Snapshot } from './types'
 import OverviewPage from './pages/OverviewPage'
 import FactorPage from './pages/FactorPage'
 import JumpPage from './pages/JumpPage'
 import HermitePage from './pages/HermitePage'
 import FundamentalsPage from './pages/FundamentalsPage'
+import FactorExplorerPage from './pages/FactorExplorerPage'
 
 function pathView(snapshot: Snapshot, catalog: FundamentalCatalog, fundamental: FundamentalSnapshot) {
+  const records = toResearchRecords(snapshot, catalog, fundamental)
+  const context = buildResearchContext(snapshot, fundamental)
   const path = window.location.pathname.replace(import.meta.env.BASE_URL, '').replace(/^\//, '')
   if (path === '' || path === 'index.html') return <OverviewPage snapshot={snapshot} />
   if (path === 'jumps') return <JumpPage snapshot={snapshot} />
   if (path === 'hermite') return <HermitePage snapshot={snapshot} />
   if (path === 'fundamentals') return <FundamentalsPage catalog={catalog} snapshot={fundamental} />
+  if (path === 'factors') return <FactorExplorerPage records={records} context={context} />
   if (path.startsWith('factors/')) return <FactorPage snapshot={snapshot} factorName={decodeURIComponent(path.slice(8))} />
   return <main className="empty"><h1>找不到这个页面</h1><a href={import.meta.env.BASE_URL}>返回总览</a></main>
 }
