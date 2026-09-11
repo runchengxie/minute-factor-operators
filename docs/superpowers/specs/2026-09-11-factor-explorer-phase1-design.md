@@ -191,4 +191,3 @@ source has no series, show the metadata and an unavailable-data panel.
 - No automated claim that a factor is predictive or validated.
 - No Jump/Hermite chart redesign.
 - No backtest or portfolio recommendation UI.
-
