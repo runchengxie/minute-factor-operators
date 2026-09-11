@@ -144,7 +144,8 @@ npm run dev
 站点包含以下入口：
 
 - `/`：因子总览与数据流
-- `/factors/realized_variance`：因子详情示例
+- `/factors`：统一因子目录，支持搜索、筛选和排序
+- `/factors/realized_variance`：统一因子详情示例
 - `/jumps`：RV / IVhat / RJV / RLJV / RSJV 跳跃分解
 - `/hermite`：Hermite 非高斯体制时间线
 - `/fundamentals`：基本面因子目录与本地 PIT snapshot 展示
@@ -157,7 +158,7 @@ python scripts/build_factor_snapshot.py \
   --output site/public/data/factor-snapshot.json
 ```
 
-推送到 `master` 后，GitHub Actions 会构建并发布 Pages。首次启用时，需要在仓库 Settings → Pages → Build and deployment 中选择 GitHub Actions。站点地址通常为 `https://<owner>.github.io/<repository>/`。
+因子目录和详情页当前是描述性研究展示：页面不会把快照统计解释为 IC、分层收益或交易策略结论。推送到 `master` 后，GitHub Actions 会构建并发布 Pages。首次启用时，需要在仓库 Settings → Pages → Build and deployment 中选择 GitHub Actions。站点地址通常为 `https://<owner>.github.io/<repository>/`。
 
 ### 基本面 PIT snapshot
 
@@ -172,3 +173,5 @@ uv run --with pandas --with pyarrow python scripts/build_fundamental_snapshot.py
 ```
 
 该 snapshot 使用 `tushare.a_share.fundamentals.pit.v2`，明确保留 `available_date` 和 vintage 信息，并只纳入六位数字的 `.SZ/.SH/.BJ` 真实股票代码。`--all-market` 会计算全市场最新截面统计，但页面只保存少量代表股票的时间序列。标准化营业利润只有在四个完整季度及前六个 TTM 都可用时才计算；这份展示数据不代表已完成回测验证。
+
+标准化营业利润目前是基于本地 PIT vintage 的初步试算：报告值按财年累计值拆分为季度，再重建 TTM。正式回测前仍需进一步核验季度归属、公告日可得性和全市场计算逻辑。
