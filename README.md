@@ -147,6 +147,7 @@ npm run dev
 - `/factors/realized_variance`：因子详情示例
 - `/jumps`：RV / IVhat / RJV / RLJV / RSJV 跳跃分解
 - `/hermite`：Hermite 非高斯体制时间线
+- `/fundamentals`：基本面因子目录与本地 PIT snapshot 展示
 
 如果已有真实因子结果，可将其根目录传给快照生成器：
 
@@ -157,3 +158,16 @@ python scripts/build_factor_snapshot.py \
 ```
 
 推送到 `master` 后，GitHub Actions 会构建并发布 Pages。首次启用时，需要在仓库 Settings → Pages → Build and deployment 中选择 GitHub Actions。站点地址通常为 `https://<owner>.github.io/<repository>/`。
+
+### 基本面 PIT snapshot
+
+基本面页面当前使用本地只读数据生成的轻量展示快照，不提交原始财报数据。生成命令示例：
+
+```bash
+uv run --with pandas --with pyarrow python scripts/build_fundamental_snapshot.py \
+  --input-root /home/richard/data/quant/market-data-platform/experiments/style-factor-full-history-20260802/assets/tushare/a_share/fundamentals_vintages/vintage=20260802 \
+  --output site/public/data/fundamental-snapshot.json \
+  --tickers 000001.SZ 600519.SH 300750.SZ
+```
+
+该 snapshot 使用 `tushare.a_share.fundamentals.pit.v2`，明确保留 `available_date` 和 vintage 信息。标准化营业利润只有在四个完整季度及前六个 TTM 都可用时才计算；这份展示数据不代表已完成回测验证。
